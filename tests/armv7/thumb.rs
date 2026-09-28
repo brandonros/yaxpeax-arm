@@ -1,5 +1,5 @@
 use yaxpeax_arch::{Arch, Decoder};
-use yaxpeax_arm::armv7::{ARMv7, Instruction};
+use yaxpeax_arm::armv7::{ARMv7, Instruction, Opcode};
 
 type InstDecoder = <ARMv7 as Arch>::Decoder;
 
@@ -3288,41 +3288,49 @@ fn test_decode_rev_cases() {
 }
 #[test]
 fn test_decode_stm_16b_cases() {
+    let mut reader = yaxpeax_arch::U8Reader::new(&[0x0f, 0xc4][..]);
+    let instr = InstDecoder::default_thumb().decode(&mut reader).unwrap();
+    assert_eq!(
+        instr.opcode,
+        Opcode::STM(true, false, false, true),
+        "narrow STMIA is increment-after, not increment-before",
+    );
+
     test_display(
         &[0x01, 0xc0],
-        "stmia r0!, {r0}"
+        "stm r0!, {r0}"
     );
     test_display(
         &[0x01, 0xc1],
-        "stmia r1!, {r0}"
+        "stm r1!, {r0}"
     );
     test_display(
         &[0x01, 0xc2],
-        "stmia r2!, {r0}"
+        "stm r2!, {r0}"
     );
     test_display(
         &[0x01, 0xc3],
-        "stmia r3!, {r0}"
+        "stm r3!, {r0}"
     );
     test_display(
         &[0x01, 0xc4],
-        "stmia r4!, {r0}"
+        "stm r4!, {r0}"
     );
     test_display(
         &[0x01, 0xc5],
-        "stmia r5!, {r0}"
+        "stm r5!, {r0}"
     );
     test_display(
         &[0x01, 0xc6],
-        "stmia r6!, {r0}"
+        "stm r6!, {r0}"
     );
     test_display(
         &[0x01, 0xc7],
-        "stmia r7!, {r0}"
+        "stm r7!, {r0}"
     );
     test_display(
         &[0xff, 0xc3],
-        "stmia r3!, {r0, r1, r2, r3, r4, r5, r6, r7}"
+        "stm r3!, {r0, r1, r2, r3, r4, r5, r6, r7}"
     );
 }
 #[test]
